@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<!--
+這個機巴是我和Gemini一起打的，指令是:
+寫一個網頁，讓它能解一元二次方程式，一元二次方程式是ax^2+bx+c=0，這個網頁能讓使用者輸入a、b、c，當使用者按下解題按鈕後會算出x是多少並顯示。
+-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>一元二次方程式解題器</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; padding-top: 50px; background-color: #f4f4f9; }
+        .container { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 350px; }
+        h2 { text-align: center; color: #333; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button:hover { background-color: #0056b3; }
+        #result { margin-top: 20px; padding: 10px; border-radius: 4px; line-height: 1.6; }
+        .success { background-color: #e7f3ff; color: #004085; border: 1px solid #b8daff; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>一元二次方程解題</h2>
+    <p style="text-align: center;">ax^2 + bx + c = 0</p>
+    
+    <div class="input-group">
+        <label>輸入 a:</label>
+        <input type="number" id="a" placeholder="例如: 1" step="any">
+    </div>
+    <div class="input-group">
+        <label>輸入 b:</label>
+        <input type="number" id="b" placeholder="例如: -5" step="any">
+    </div>
+    <div class="input-group">
+        <label>輸入 c:</label>
+        <input type="number" id="c" placeholder="例如: 6" step="any">
+    </div>
+    
+    <button onclick="solveEquation()">開始解題</button>
+
+    <div id="result" style="display:none;"></div>
+</div>
+
+<script>
+    function solveEquation() {
+        const a = parseFloat(document.getElementById('a').value);
+        const b = parseFloat(document.getElementById('b').value);
+        const c = parseFloat(document.getElementById('c').value);
+        const resultDiv = document.getElementById('result');
+
+        // 基本驗證
+        if (isNaN(a) || isNaN(b) || isNaN(c)) {
+            showResult("請輸入所有的係數！", "error");
+            return;
+        }
+        if (a === 0) {
+            showResult("係數 a 不能為 0（否則這不是二次方程式）。", "error");
+            return;
+        }
+
+        // 計算判別式 D = b^2 - 4ac
+        const discriminant = b * b - 4 * a * c;
+        let message = "";
+
+        if (discriminant > 0) {
+            // 兩個相異實根
+            const x1 = (-b + Math.sqrt(discriminant)) / (2 * a);
+            const x2 = (-b - Math.sqrt(discriminant)) / (2 * a);
+            message = `判別式 > 0，有兩個相異實根：<br><b>x₁ = ${x1.toFixed(4)}</b><br><b>x₂ = ${x2.toFixed(4)}</b>`;
+        } else if (discriminant === 0) {
+            // 重根
+            const x = -b / (2 * a);
+            message = `判別式 = 0，有一個重根：<br><b>x = ${x.toFixed(4)}</b>`;
+        } else {
+            // 虛根
+            const realPart = (-b / (2 * a)).toFixed(4);
+            const imagPart = (Math.sqrt(-discriminant) / (2 * a)).toFixed(4);
+            message = `判別式 < 0，有兩個共軛虛根：<br><b>x₁ = ${realPart} + ${imagPart}i</b><br><b>x₂ = ${realPart} - ${imagPart}i</b>`;
+        }
+
+        showResult(message, "success");
+    }
+
+    function showResult(text, className) {
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerHTML = text;
+        resultDiv.className = className;
+        resultDiv.style.display = "block";
+    }
+</script>
+
+</body>
+</html>
